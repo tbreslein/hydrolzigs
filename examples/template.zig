@@ -1,9 +1,16 @@
 const std = @import("std");
 const hydrol = @import("hydrol");
 
+const conf = hydrol.config.Config{
+    .mesh = .{
+        .n_comp = 100,
+        .xi_in = 1.0,
+        .xi_out = 2.0,
+    },
+};
+
 pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us!\n", .{"codebase"});
-    const x = hydrol.add(1, 2);
-    std.debug.print("add(1,2) = {}!\n", .{x});
+    const n_gc = hydrol.init(conf);
+    std.debug.print("n_gc = {}\n", .{n_gc});
+    std.debug.print("conf = {}\n", .{conf});
 }
