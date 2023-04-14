@@ -1,0 +1,3 @@
+src/user_sims
+zig-cache
+zig-out/bin
