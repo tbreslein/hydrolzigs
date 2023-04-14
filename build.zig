@@ -18,8 +18,8 @@ pub fn build(b: *std.build.Builder) void {
     if (sim_path.len > 0) {
         var sim_path_splits = std.mem.splitBackwards(u8, sim_path, "/");
         const sim_file = sim_path_splits.next().?;
-        assert(std.mem.eql(u8, sim_file[sim_file.len - 4 .. sim_file.len],".zig"));
-        const name = sim_file[0..sim_file.len - 4];
+        assert(std.mem.eql(u8, sim_file[sim_file.len - 4 .. sim_file.len], ".zig"));
+        const name = sim_file[0 .. sim_file.len - 4];
 
         const exe = b.addExecutable(name, sim_path);
         exe.setTarget(target);
