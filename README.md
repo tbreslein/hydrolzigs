@@ -8,7 +8,7 @@ This is just a project for me to learn zigs in a domain I know.
 
 This project is licensed under the MIT license.
 
-> _Copyright © `2022-2023`, `Tommy Breslein`_
+> _Copyright © `2023`, `Tommy Breslein`_
 >
 > _All rights reserved._
 > Permission is hereby granted, free of charge, to any person obtaining a copy
