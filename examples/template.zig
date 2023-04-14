@@ -10,7 +10,7 @@ const conf = hydrol.config.Config{
 };
 
 pub fn main() !void {
-    const n_gc = hydrol.init(conf);
-    std.debug.print("n_gc = {}\n", .{n_gc});
+    const mesh = hydrol.init(conf);
+    std.debug.print("mesh = {}\n", .{mesh});
     std.debug.print("conf = {}\n", .{conf});
 }

@@ -1,9 +1,10 @@
 const std = @import("std");
 pub const config = @import("config.zig");
+const m_mesh = @import("mesh.zig");
 
-pub fn init(comptime conf: config.Config) u32 {
+pub fn init(comptime conf: config.Config) m_mesh.Mesh(conf.mesh.n_comp + 2 * 2) {
     comptime conf.validate();
-    return conf.mesh.n_gc;
+    return m_mesh.init_mesh(conf);
 }
 
 pub fn add(x: i32, y: i32) i32 {

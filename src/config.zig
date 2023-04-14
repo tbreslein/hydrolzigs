@@ -8,7 +8,6 @@ pub const Config = struct {
 
 const MeshConfig = struct {
     n_comp: u32,
-    n_gc: u32 = 2,
     xi_in: f64,
     xi_out: f64,
 
