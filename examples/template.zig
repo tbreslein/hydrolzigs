@@ -11,7 +11,7 @@ const conf = hydrol.config.Config{
 };
 
 pub fn main() !void {
-    const mesh = hydrol.init(conf);
+    const mesh = comptime hydrol.init(conf);
+    hydrol.run(conf.mesh.n, mesh);
     std.debug.print("mesh = {}\n", .{mesh});
-    std.debug.print("conf = {}\n", .{conf});
 }
