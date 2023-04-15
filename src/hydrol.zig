@@ -2,7 +2,7 @@ const std = @import("std");
 pub const config = @import("config.zig");
 const m_mesh = @import("mesh.zig");
 
-pub fn init(comptime conf: config.Config) m_mesh.Mesh(conf.mesh.n_comp + 2 * 2) {
+pub fn init(comptime conf: config.Config) m_mesh.Mesh(conf.mesh.n) {
     comptime conf.validate();
     return m_mesh.init_mesh(conf);
 }

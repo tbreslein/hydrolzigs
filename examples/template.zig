@@ -3,7 +3,9 @@ const hydrol = @import("hydrol");
 
 const conf = hydrol.config.Config{
     .mesh = .{
-        .n_comp = 100,
+        // .type = hydrol.config.MeshConfig.MeshType.cartesian,
+        .type = .cartesian,
+        .n = 100,
         .xi_in = 1.0,
         .xi_out = 2.0,
     },
