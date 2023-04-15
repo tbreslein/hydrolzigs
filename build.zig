@@ -34,6 +34,8 @@ pub fn build(b: *std.build.Builder) void {
         }
         const run_step = b.step(name, "Run this simulation");
         run_step.dependOn(&run_cmd.step);
+
+        b.default_step = run_step;
     }
 
     const lib_tests = b.addTest(hydrol_path);
