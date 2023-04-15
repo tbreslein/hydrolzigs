@@ -7,11 +7,11 @@ pub const Config = struct {
 };
 
 pub const MeshConfig = struct {
-    pub const MeshType = enum {
+    pub const Type = enum {
         cartesian,
     };
 
-    type: MeshType,
+    type: Type,
     n: u32,
     xi_in: f64,
     xi_out: f64,

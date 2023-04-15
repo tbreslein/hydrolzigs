@@ -61,7 +61,7 @@ pub fn Mesh(comptime N: u32) type {
 
 pub fn init_mesh(comptime conf: m_config.Config) Mesh(conf.mesh.n) {
     const dxi = comptime switch (conf.mesh.type) {
-        .cartesian => (conf.mesh.xi_out - conf.mesh.xi_in) / conf.mesh.n,
+        .cartesian => (conf.mesh.xi_out - conf.mesh.xi_in) / @as(f64, conf.mesh.n - 4),
     };
     const deta = comptime switch (conf.mesh.type) {
         .cartesian => 1.0,
@@ -71,85 +71,87 @@ pub fn init_mesh(comptime conf: m_config.Config) Mesh(conf.mesh.n) {
     };
 
     const xi_west = blk: {
-        var vec = @splat(conf.mesh.n, 0.0);
+        var vec = @splat(conf.mesh.n, @as(f64, 0.0));
         comptime switch (conf.mesh.type) {
             .cartesian => {
-                for (vec) |x, i| {
-                    x = @mulAdd(f64, dxi, i, conf.mesh.xi_in);
+                // TODO: make this a ranged for loop with zig-git
+                var i = 0;
+                while (i < conf.mesh.n) : (i += 1) {
+                    vec[i] = @mulAdd(f64, dxi, i - 2, conf.mesh.xi_in);
                 }
             },
         };
         break :blk vec;
     };
-    const xi_cent = xi_west + 0.5 * dxi;
-    const xi_east = xi_west + dxi;
+    const xi_cent = xi_west + @splat(conf.mesh.n, 0.5 * dxi);
+    const xi_east = xi_west + @splat(conf.mesh.n, dxi);
 
     const h_xi_cent = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_xi_west = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_xi_east = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_eta_cent = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_eta_west = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_eta_east = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_phi_cent = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_phi_west = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
     const h_phi_east = comptime switch (conf.mesh.type) {
-        .cartesian => @splat(conf.mesh.n, 0.0),
+        .cartesian => @splat(conf.mesh.n, @as(f64, 0.0)),
     };
 
     const sqrt_g = h_xi_cent * h_eta_cent * h_phi_cent;
 
-    const line_xi = h_xi_cent * dxi;
-    const line_xi_inv = 1.0 / line_xi;
+    const line_xi = h_xi_cent * @splat(conf.mesh.n, dxi);
+    const line_xi_inv = @splat(conf.mesh.n, @as(f64, 1.0)) / line_xi;
 
     const d_area_xi_deta_dphi_west = h_eta_west * h_phi_west;
     const d_area_xi_deta_dphi_east = h_eta_east * h_phi_east;
 
     const area_cell = (xi_east - xi_west) * (xi_east * xi_west);
-    const area_west = d_area_xi_deta_dphi_west * deta * dphi;
-    const area_east = d_area_xi_deta_dphi_east * deta * dphi;
+    const area_west = comptime d_area_xi_deta_dphi_west * @splat(conf.mesh.n, @as(f64, deta * dphi));
+    const area_east = d_area_xi_deta_dphi_east * @splat(conf.mesh.n, @as(f64, deta * dphi));
 
-    const volume = sqrt_g * dxi * deta * dphi;
-    const deta_dphi_d_volume = @divExact(deta * dphi, math.f64_epsilon + volume);
+    const volume = sqrt_g * @splat(conf.mesh.n, dxi * deta * dphi);
+    const deta_dphi_d_volume = @divExact(@splat(conf.mesh.n, @as(f64, deta * dphi)), @splat(conf.mesh.n, @as(f64, math.f64_epsilon)) + volume);
 
     const cell_width = xi_east - xi_west;
-    const cell_width_inv = 1.0 / cell_width;
+    const cell_width_inv = @splat(conf.mesh.n, @as(f64, 1.0)) / cell_width;
 
-    const cexe = 0.5 * (h_phi_east + h_phi_west) * (h_eta_east - h_eta_west) * deta_dphi_d_volume;
-    const cpxp = 0.5 * (h_eta_east + h_eta_west) * (h_phi_east - h_phi_west) * deta_dphi_d_volume;
-    const cxex = @splat(conf.mesh.n, 1.0);
-    const cpep = @splat(conf.mesh.n, 1.0);
-    const cxpx = @splat(conf.mesh.n, 1.0);
-    const cepe = @splat(conf.mesh.n, 1.0);
+    const cexe = @splat(conf.mesh.n, @as(f64, 0.5)) * (h_phi_east + h_phi_west) * (h_eta_east - h_eta_west) * deta_dphi_d_volume;
+    const cpxp = @splat(conf.mesh.n, @as(f64, 0.5)) * (h_eta_east + h_eta_west) * (h_phi_east - h_phi_west) * deta_dphi_d_volume;
+    const cxex = @splat(conf.mesh.n, @as(f64, 1.0));
+    const cpep = @splat(conf.mesh.n, @as(f64, 1.0));
+    const cxpx = @splat(conf.mesh.n, @as(f64, 1.0));
+    const cepe = @splat(conf.mesh.n, @as(f64, 1.0));
 
     return Mesh(conf.mesh.n){
         .type = conf.mesh.type,
         .xi_in = conf.mesh.xi_in,
         .xi_out = conf.mesh.xi_out,
         .dxi = dxi,
-        .eta = deta,
+        .deta = deta,
         .dphi = dphi,
         .xi_cent = xi_cent,
         .xi_west = xi_west,
         .xi_east = xi_east,
-        .xi_cent_inv = 1.0 / xi_cent,
-        .xi_west_inv = 1.0 / xi_west,
-        .xi_east_inv = 1.0 / xi_east,
+        .xi_cent_inv = @splat(conf.mesh.n, @as(f64, 1.0)) / xi_cent,
+        .xi_west_inv = @splat(conf.mesh.n, @as(f64, 1.0)) / xi_west,
+        .xi_east_inv = @splat(conf.mesh.n, @as(f64, 1.0)) / xi_east,
         .h_xi_cent = h_xi_cent,
         .h_xi_west = h_xi_west,
         .h_xi_east = h_xi_east,
@@ -174,14 +176,14 @@ pub fn init_mesh(comptime conf: m_config.Config) Mesh(conf.mesh.n) {
         .cexe = cexe,
         .cpxp = cpxp,
         .cxex = cxex,
-        .cxpx = cxpx,
-        .cpxp = cpxp,
+        .cpep = cpep,
+        .cxpx = cpxp,
         .cepe = cepe,
-        .minus_cexe = -1.0 * cexe,
-        .minus_cpxp = -1.0 * cpxp,
-        .minus_cxex = -1.0 * cxex,
-        .minus_cxpx = -1.0 * cxpx,
-        .minus_cpxp = -1.0 * cpxp,
-        .minus_cepe = -1.0 * cepe,
+        .minus_cexe = -cexe,
+        .minus_cpxp = -cpxp,
+        .minus_cxex = -cxex,
+        .minus_cpep = -cpep,
+        .minus_cxpx = -cxpx,
+        .minus_cepe = -cepe,
     };
 }
