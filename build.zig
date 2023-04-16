@@ -19,8 +19,7 @@ pub fn build(b: *std.build.Builder) void {
         // Extract the file name without the ending, for example extract "template" from "examples/template.zig"
         // by splitting it into path chunks, go to the last chunk, and strip out the file ending.
 
-        // TODO: make this portable for windows paths
-        var sim_path_splits = std.mem.splitBackwards(u8, sim_path, "/");
+        var sim_path_splits = std.mem.splitBackwards(u8, sim_path, std.fs.path.sep_str);
         const sim_file = sim_path_splits.next().?;
         assert(std.mem.eql(u8, sim_file[sim_file.len - 4 .. sim_file.len], ".zig"));
         const name = sim_file[0 .. sim_file.len - 4];
