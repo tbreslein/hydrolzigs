@@ -2,14 +2,12 @@
 //! Reexports config, as well as the init and run functions.
 
 const std = @import("std");
-pub const config = @import("config.zig");
-const m_mesh = @import("mesh.zig");
+pub const Config = @import("config.zig").Config;
+pub const Mesh = @import("mesh.zig").Mesh;
+pub const Physics = @import("physics.zig").Physics;
 
-/// Initialises all objects needed for a simulation, configured by a hydrol.config.Config
-pub fn init(comptime conf: config.Config) m_mesh.Mesh(conf.mesh.n) {
-    comptime conf.validate();
-    return m_mesh.initMesh(conf);
+/// Run a simulation
+pub fn run(comptime c: Config, u: *Physics(c), mesh: Mesh(c)) void {
+    std.debug.print("mesh = {}\n", .{mesh});
+    std.debug.print("u = {}\n", .{u});
 }
-
-/// Run a simulation, given the objects you initialised with init()
-pub fn run(comptime N: u32, _: m_mesh.Mesh(N)) void {}
