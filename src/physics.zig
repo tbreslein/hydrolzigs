@@ -1,9 +1,12 @@
+//! Exports the Physics struct that carries the state of physics variables
+
 const Config = @import("config.zig").Config;
 const Mesh = @import("mesh.zig").Mesh;
 const std = @import("std");
 const panic = std.debug.panic;
 const math = std.math;
 
+/// Handles the variables regarding the physics in the simulation.
 pub fn Physics(comptime c: Config) type {
     const num_eq = switch (c.physics.type) {
         .euler1d_adiabatic => 3,
@@ -30,26 +33,45 @@ pub fn Physics(comptime c: Config) type {
     };
 
     return struct {
+        /// Variables at the centre of each cell in the mesh
         cent: Variables = .{},
+
+        /// Variables at the west faces of each cell in the mesh
         west: Variables = .{},
+
+        /// Variables at the east faces of each cell in the mesh
         east: Variables = .{},
 
+        /// Equation index for the minimal eigen values in Variables.eigen_vals
         comptime j_eigenmin: u32 = j_eigenmin,
+
+        /// Equation index for the maximal eigen values in Variables.eigen_vals
         comptime j_eigenmax: u32 = j_eigenmax,
 
         pub const Variables = struct {
+            /// Primitive variables
             prim: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+
+            /// Conservative variables
             cons: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+
+            /// Speed of sound
             csound: @Vector(c.mesh.n, f64) = @splat(c.mesh.n, @as(f64, 0.0)),
+
+            /// Eigen values
             eigen_vals: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+
+            /// Physical flux
             flux: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
 
+            /// Assigns an instance of Variables to self
             pub fn assignFrom(self: *Variables, other: Variables) void {
                 self.*.prim = other.prim;
                 self.*.cons = other.cons;
                 self.*.csound = other.csound;
             }
 
+            /// Update conservative variables, assuming the primitive ones are up-to-date
             pub fn updateCons(self: *Variables) void {
                 switch (c.physics.type) {
                     .euler1d_isothermal => {
@@ -64,6 +86,7 @@ pub fn Physics(comptime c: Config) type {
                 }
             }
 
+            /// Update primitive variables, assuming the conservative ones are up-to-date
             pub fn updatePrim(self: *Variables) void {
                 switch (c.physics.type) {
                     .euler1d_isothermal => {
