@@ -1,3 +1,7 @@
+// Copyright (c) 2023
+// Author: Tommy Breslein (github.com/tbreslein)
+// License: MIT
+
 //! Exports the Physics struct that carries the state of physics variables
 
 const Config = @import("config.zig").Config;

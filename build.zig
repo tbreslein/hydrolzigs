@@ -1,3 +1,7 @@
+// Copyright (c) 2023
+// Author: Tommy Breslein (github.com/tbreslein)
+// License: MIT
+
 const std = @import("std");
 const assert = std.debug.assert;
 

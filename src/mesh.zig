@@ -1,3 +1,7 @@
+// Copyright (c) 2023
+// Author: Tommy Breslein (github.com/tbreslein)
+// License: MIT
+
 //! Exports the Mesh struct for building the grids a simulation runs on.
 
 const Config = @import("config.zig").Config;

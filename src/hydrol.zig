@@ -1,3 +1,7 @@
+// Copyright (c) 2023
+// Author: Tommy Breslein (github.com/tbreslein)
+// License: MIT
+
 //! Entry point for the hydrolzig library.
 //! Reexports config, as well as the init and run functions.
 

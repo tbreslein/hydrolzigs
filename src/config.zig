@@ -1,3 +1,7 @@
+// Copyright (c) 2023
+// Author: Tommy Breslein (github.com/tbreslein)
+// License: MIT
+
 //! Exports structs needed for configuring a hydrolzigs simulation.
 
 /// Struct that configures a hydrolzigs simulation.
