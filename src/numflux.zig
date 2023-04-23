@@ -30,8 +30,7 @@ pub fn NumFlux(comptime c: Config) type {
         }
 
         fn reconstruct(_: NumFlux, _: *Physics(c)) void {
-            // for (0..num_eq) |j| {
-            // }
+            for (0..num_eq) |_| {}
         }
     };
 }

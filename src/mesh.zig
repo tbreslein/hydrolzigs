@@ -25,10 +25,8 @@ pub fn Mesh(comptime c: Config) type {
         var vec = @splat(c.mesh.n, @as(f64, 0.0));
         comptime switch (c.mesh.type) {
             .cartesian => {
-                // TODO: make this a ranged for loop in zig 0.11
-                var i = 0;
-                while (i < c.mesh.n) : (i += 1) {
-                    vec[i] = @mulAdd(f64, dxi, i - 2, c.mesh.xi_in);
+                inline for (0..c.mesh.n) |i| {
+                    vec[i] = @mulAdd(f64, dxi, @as(i32, i) - 2, c.mesh.xi_in);
                 }
             },
         };
