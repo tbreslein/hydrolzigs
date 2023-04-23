@@ -9,7 +9,11 @@ const hydrol_path = "src/hydrol.zig";
 
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
-    const mode = b.standardReleaseOptions();
+    const optimize = b.standardOptimizeOption(.{});
+
+    const hydrol_module = b.createModule(.{
+        .source_file = .{ .path = hydrol_path },
+    });
 
     const sim_path = b.option(
         []const u8,
@@ -28,13 +32,15 @@ pub fn build(b: *std.build.Builder) void {
         assert(std.mem.eql(u8, sim_file[sim_file.len - 4 .. sim_file.len], ".zig"));
         const name = sim_file[0 .. sim_file.len - 4];
 
-        const exe = b.addExecutable(name, sim_path);
-        exe.setTarget(target);
-        exe.setBuildMode(mode);
-        exe.addPackagePath("hydrol", hydrol_path);
-        // exe.install();
+        const exe = b.addExecutable(.{
+            .name = name,
+            .root_source_file = .{ .path = sim_path },
+            .target = target,
+            .optimize = optimize,
+        });
+        exe.addModule("hydrol", hydrol_module);
 
-        const run_cmd = exe.run();
+        const run_cmd = b.addRunArtifact(exe);
         run_cmd.step.dependOn(b.getInstallStep());
         if (b.args) |args| {
             run_cmd.addArgs(args);
@@ -45,9 +51,12 @@ pub fn build(b: *std.build.Builder) void {
         b.default_step = run_step;
     }
 
-    const lib_tests = b.addTest(hydrol_path);
-    lib_tests.setTarget(target);
-    lib_tests.setBuildMode(mode);
+    const lib_tests = b.addTest(.{
+        .name = "hydrol_unit_test",
+        .root_source_file = .{ .path = hydrol_path },
+        .target = target,
+        .optimize = optimize,
+    });
 
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&lib_tests.step);
