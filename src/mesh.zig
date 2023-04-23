@@ -36,31 +36,31 @@ pub fn Mesh(comptime c: Config) type {
     const xi_east = xi_west + @splat(c.mesh.n, dxi);
 
     const h_xi_cent = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_xi_west = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_xi_east = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_eta_cent = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_eta_west = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_eta_east = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_phi_cent = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_phi_west = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
     const h_phi_east = comptime switch (c.mesh.type) {
-        .cartesian => @splat(c.mesh.n, @as(f64, 0.0)),
+        .cartesian => @splat(c.mesh.n, @as(f64, 1.0)),
     };
 
     const sqrt_g = h_xi_cent * h_eta_cent * h_phi_cent;
