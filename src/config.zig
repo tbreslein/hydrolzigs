@@ -14,6 +14,9 @@ pub const Config = struct {
     /// Configures Physics objects
     physics: PhysicsConfig,
 
+    /// Configures NumFlux objects
+    numflux: NumFluxConfig,
+
     pub const MeshConfig = struct {
         /// Enumerates the different kinds of meshes available.
         pub const Type = enum {
@@ -58,6 +61,29 @@ pub const Config = struct {
 
         /// only used in adiabatic physics
         adiabatic_index: f64 = 1.0,
+    };
+
+    pub const NumFluxConfig = struct {
+        /// Enumerates the different kinds of limiter functions available.
+        pub const Limiter = enum {
+            /// Min-Mod 1 limiter
+            minmod,
+
+            /// Superbee limiter
+            superbee,
+
+            /// Monocent limiter
+            monocent,
+
+            /// Van leer limiter
+            vanleer,
+        };
+
+        /// The type of limiter function to use
+        limiter_mode: Limiter = .vanleer,
+
+        /// Generic parameter for those limiter functions that one (currently only Monocent)
+        limiter_param: f64 = 1.2,
     };
 
     /// Ensures that the different options are coherent. These checks are done at comptime and throw compile errors.

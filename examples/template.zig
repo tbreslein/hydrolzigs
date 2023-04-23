@@ -15,10 +15,14 @@ const conf = hydrol.Config{
     .physics = .{
         .type = .euler1d_isothermal,
     },
+    .numflux = .{
+        .limiter_mode = .vanleer,
+    },
 };
 
 pub fn main() !void {
     const mesh = hydrol.Mesh(conf){};
     var u = hydrol.Physics(conf){};
-    hydrol.run(conf, &u, mesh);
+    var rhs = hydrol.RHS(conf){};
+    hydrol.run(conf, &u, &rhs, mesh);
 }

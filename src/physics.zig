@@ -10,14 +10,19 @@ const std = @import("std");
 const panic = std.debug.panic;
 const math = std.math;
 
+/// Returns the number of a equations for a simulation configuration stored in the comptime parameter c.
+pub fn getNumEq(comptime c: Config) u32 {
+    return switch (c.physics.type) {
+        .euler1d_adiabatic => 3,
+        .euler1d_isothermal => 2,
+    };
+}
+
 /// Handles the variables regarding the physics in the simulation.
 ///
 /// Takes a Config as a comptime value which stores the configuration for a simulation.
 pub fn Physics(comptime c: Config) type {
-    const num_eq = switch (c.physics.type) {
-        .euler1d_adiabatic => 3,
-        .euler1d_isothermal => 2,
-    };
+    const num_eq = getNumEq(c);
     const j_rho = switch (c.physics.type) {
         .euler1d_adiabatic => 1,
         .euler1d_isothermal => 1,
