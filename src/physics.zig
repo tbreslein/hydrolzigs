@@ -7,6 +7,8 @@ const panic = std.debug.panic;
 const math = std.math;
 
 /// Handles the variables regarding the physics in the simulation.
+///
+/// Takes a Config as a comptime value which stores the configuration for a simulation.
 pub fn Physics(comptime c: Config) type {
     const num_eq = switch (c.physics.type) {
         .euler1d_adiabatic => 3,
@@ -101,12 +103,14 @@ pub fn Physics(comptime c: Config) type {
                 }
             }
 
+            /// Update speed of sound, assuming the primitive variables are up-to-date
             pub fn updateCsound(self: *Variables) void {
                 if (!is_isothermal) {
                     self.*.csound = @sqrt(@splat(c.mesh.n, c.physics.adiabatic_index) * self.*.prim[j_pressure] / self.*.prim[j_rho]);
                 }
             }
 
+            /// Update eigen values, assuming the primitive variables are up-to-date
             pub fn updateEigenVals(self: *Variables) void {
                 self.*.eigen_vals[j_eigenmin] = self.*.prim[j_xi] - self.*.csound;
                 self.*.eigen_vals[j_eigenmax] = self.*.prim[j_xi] + self.*.csound;
@@ -115,6 +119,7 @@ pub fn Physics(comptime c: Config) type {
                 }
             }
 
+            /// Update physical flux, assuming the primitive variables are up-to-date
             pub fn updateFlux(self: *Variables) void {
                 switch (c.physics.type) {
                     .euler1d_isothermal => {
@@ -130,11 +135,19 @@ pub fn Physics(comptime c: Config) type {
             }
         };
 
+        /// Initialises self.west and self.east, assuming self.cent is already initialised.
+        ///
+        /// This is especially useful in isothermal physics, because updateCsound is a no-op in that case,
+        /// so even if self.cent.csound is set, those fields in self.{west,east} need to be set through this
+        /// function because it would never be set otherwise.
         pub fn initWestEast(self: *Physics(c)) void {
             self.*.west.assignFrom(self.*.cent);
             self.*.east.assignFrom(self.*.cent);
         }
 
+        /// Calculates the time step width according to the CFL criterium.
+        ///
+        /// Panics in case the time step width is not finite.
         pub fn calcDtCFL(self: Physics(c), c_cfl: f64, mesh: Mesh) f64 {
             const dt = c_cfl / @reduce(.Max, @fabs(self.cent.eigen_vals[j_eigenmax] * mesh.cell_width_inv));
             if (!math.isFinite(dt)) {
