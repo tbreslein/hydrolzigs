@@ -52,10 +52,7 @@ pub fn build(b: *std.build.Builder) void {
     }
 
     const lib_tests = b.addTest(.{
-        .name = "hydrol_unit_test",
         .root_source_file = .{ .path = hydrol_path },
-        .target = target,
-        .optimize = optimize,
     });
 
     const test_step = b.step("test", "Run unit tests");

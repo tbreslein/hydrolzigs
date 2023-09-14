@@ -17,3 +17,7 @@ pub fn run(comptime c: Config, u: *Physics(c), rhs: *RHS(c), mesh: Mesh(c)) void
     std.debug.print("u = {}\n", .{u});
     std.debug.print("rhs = {}\n", .{rhs});
 }
+
+test {
+    @import("std").testing.refAllDecls(@This());
+}

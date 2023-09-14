@@ -7,6 +7,7 @@
 const Config = @import("config.zig").Config;
 const getNumEq = @import("physics.zig").getNumEq;
 const Mesh = @import("mesh.zig").Mesh;
+const vsplat = @import("mesh.zig").vsplat;
 const NumFlux = @import("numflux.zig").NumFlux;
 const Physics = @import("physics.zig").Physics;
 
@@ -16,7 +17,7 @@ const Physics = @import("physics.zig").Physics;
 pub fn RHS(comptime c: Config) type {
     const num_eq = getNumEq(c);
     return struct {
-        full_rhs: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+        full_rhs: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
         numflux: NumFlux(c) = .{},
     };
 }

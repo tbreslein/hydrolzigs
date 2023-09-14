@@ -6,6 +6,7 @@
 
 const Config = @import("config.zig").Config;
 const Mesh = @import("mesh.zig").Mesh;
+const vsplat = @import("mesh.zig").vsplat;
 const std = @import("std");
 const panic = std.debug.panic;
 const math = std.math;
@@ -24,16 +25,16 @@ pub fn getNumEq(comptime c: Config) u32 {
 pub fn Physics(comptime c: Config) type {
     const num_eq = getNumEq(c);
     const j_rho = switch (c.physics.type) {
+        .euler1d_adiabatic => 0,
+        .euler1d_isothermal => 0,
+    };
+    const j_xi = switch (c.physics.type) {
         .euler1d_adiabatic => 1,
         .euler1d_isothermal => 1,
     };
-    const j_xi = switch (c.physics.type) {
+    const j_pressure = switch (c.physics.type) {
         .euler1d_adiabatic => 2,
         .euler1d_isothermal => 2,
-    };
-    const j_pressure = switch (c.physics.type) {
-        .euler1d_adiabatic => 3,
-        .euler1d_isothermal => 3,
     };
     const j_eigenmin = 0;
     const j_eigenmax = num_eq - 1;
@@ -61,19 +62,19 @@ pub fn Physics(comptime c: Config) type {
 
         pub const Variables = struct {
             /// Primitive variables
-            prim: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+            prim: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
 
             /// Conservative variables
-            cons: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+            cons: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
 
             /// Speed of sound
-            csound: @Vector(c.mesh.n, f64) = @splat(c.mesh.n, @as(f64, 0.0)),
+            csound: @Vector(c.mesh.n, f64) = @splat(0.0),
 
             /// Eigen values
-            eigen_vals: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+            eigen_vals: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
 
             /// Physical flux
-            flux: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+            flux: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
 
             /// Assigns an instance of Variables to self
             pub fn assignFrom(self: *Variables, other: Variables) void {
@@ -92,7 +93,7 @@ pub fn Physics(comptime c: Config) type {
                     .euler1d_adiabatic => {
                         self.*.cons[j_rho] = self.*.prim[j_rho];
                         self.*.cons[j_xi] = self.*.prim[j_xi] * self.*.prim[j_rho];
-                        self.*.cons[j_pressure] = self.*.prim[j_pressure] / @splat(c.mesh.n, c.physics.adiabatic_index - 1.0) + (0.5 * self.*.prim[j_rho] * self.*.prim[j_xi] * self.*.prim[j_xi]);
+                        self.*.cons[j_pressure] = self.*.prim[j_pressure] / vsplat(c.mesh.n, c.physics.adiabatic_index - 1.0) + (vsplat(c.mesh.n, 0.5) * self.*.prim[j_rho] * self.*.prim[j_xi] * self.*.prim[j_xi]);
                     },
                 }
             }
@@ -107,7 +108,7 @@ pub fn Physics(comptime c: Config) type {
                     .euler1d_adiabatic => {
                         self.*.prim[j_rho] = self.*.cons[j_rho];
                         self.*.prim[j_xi] = self.*.cons[j_xi] / self.*.cons[j_rho];
-                        self.*.prim[j_pressure] = @splat(c.mesh.n, c.physics.adiabatic_index - 1.0) * (self.*.cons[j_pressure] - @splat(c.mesh.n, 0.5) / self.*.cons[j_rho] * self.*.cons[j_xi] * self.*.cons[j_xi]);
+                        self.*.prim[j_pressure] = vsplat(c.mesh.n, c.physics.adiabatic_index - 1.0) * (self.*.cons[j_pressure] - vsplat(c.mesh.n, 0.5) / self.*.cons[j_rho] * self.*.cons[j_xi] * self.*.cons[j_xi]);
                     },
                 }
             }
@@ -115,7 +116,7 @@ pub fn Physics(comptime c: Config) type {
             /// Update speed of sound, assuming the primitive variables are up-to-date
             pub fn updateCsound(self: *Variables) void {
                 if (!is_isothermal) {
-                    self.*.csound = @sqrt(@splat(c.mesh.n, c.physics.adiabatic_index) * self.*.prim[j_pressure] / self.*.prim[j_rho]);
+                    self.*.csound = @sqrt(self.*.gamma_vec * self.*.prim[j_pressure] / self.*.prim[j_rho]);
                 }
             }
 
@@ -165,4 +166,38 @@ pub fn Physics(comptime c: Config) type {
             return dt;
         }
     };
+}
+
+fn conversionTest(comptime physconf: Config.PhysicsConfig) !void {
+    const c = comptime Config{
+        .mesh = .{
+            .type = .cartesian,
+            .n = 10,
+            .xi_in = 1.0,
+            .xi_out = 2.0,
+        },
+        .physics = physconf,
+        .numflux = .{
+            .limiter_mode = .vanleer,
+        },
+    };
+    const m = comptime getNumEq(c);
+    var expected = [_]@Vector(c.mesh.n, f64){vsplat(c.mesh.n, 111.1)} ** m;
+    var u = Physics(c){};
+    u.cent.prim = expected;
+    u.cent.updateCons();
+    u.cent.updatePrim();
+    for (0..m) |j| {
+        for (0..c.mesh.n) |i| {
+            try std.testing.expectApproxEqRel(expected[j][i], u.cent.prim[j][i], 1.0E-12);
+        }
+    }
+}
+
+test "Convert back and forth // euler1d isothermal" {
+    try conversionTest(.{ .type = .euler1d_isothermal });
+}
+
+test "Convert back and forth // euler1d adiabatic" {
+    try conversionTest(.{ .type = .euler1d_adiabatic, .adiabatic_index = 5.0 / 3.0 });
 }

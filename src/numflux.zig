@@ -7,6 +7,7 @@
 const Config = @import("config.zig").Config;
 const getNumEq = @import("physics.zig").getNumEq;
 const Mesh = @import("mesh.zig").Mesh;
+const vsplat = @import("mesh.zig").vsplat;
 const Physics = @import("physics.zig").Physics;
 const std = @import("std");
 const math = std.math;
@@ -18,14 +19,14 @@ pub fn NumFlux(comptime c: Config) type {
     const num_eq = getNumEq(c);
     const mesh_temp = Mesh(c){};
     return struct {
-        a_plus: @Vector(c.mesh.n, f64) = @splat(c.mesh.n, @as(f64, 0.0)),
-        a_minus: @Vector(c.mesh.n, f64) = @splat(c.mesh.n, @as(f64, 0.0)),
-        b: @Vector(c.mesh.n, f64) = @splat(c.mesh.n, @as(f64, 0.0)),
-        c: @Vector(c.mesh.n, f64) = @splat(c.mesh.n, @as(f64, 0.0)),
+        a_plus: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 0.0),
+        a_minus: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 0.0),
+        b: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 0.0),
+        c: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 0.0),
         comptime inv_dxi: f64 = 1.0 / mesh_temp.dxi,
         comptime dist_west: @Vector(c.mesh.n, f64) = mesh_temp.xi_west - mesh_temp.xi_cent,
         comptime dist_east: @Vector(c.mesh.n, f64) = mesh_temp.xi_east - mesh_temp.xi_cent,
-        flux_num: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(c.mesh.n, @as(f64, 0.0))} ** num_eq,
+        flux_num: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){vsplat(c.mesh.n, 0.0)} ** num_eq,
 
         pub fn calcDFluxDXi(self: *NumFlux, u: *Physics, _: Mesh) void {
             self.*.reconstruct(u);
