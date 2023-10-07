@@ -7,7 +7,7 @@
 const Config = @import("config.zig").Config;
 const getNumEq = @import("physics.zig").getNumEq;
 const Mesh = @import("mesh.zig").Mesh;
-const vsplat = @import("mesh.zig").vsplat;
+const vsplat = @import("utils.zig").vsplat;
 const Physics = @import("physics.zig").Physics;
 const std = @import("std");
 const math = std.math;
@@ -39,7 +39,7 @@ pub fn NumFlux(comptime c: Config) type {
                     const y = u.*.cent.cons[j][i - 1] - u.*.cent.cons[j][i];
 
                     // this should be resolved at comptime, since c is comptime
-                    const slope = self.inv_dxi * switch (c.numflux.limiter_mode) {
+                    const slope = self.inv_dxi * comptime switch (c.numflux.limiter_mode) {
                         .minmod => if (math.sign(x) * math.sign(y) > 0) {
                             math.sign(x) * math.min(@fabs(x), @fabs(y));
                         } else {

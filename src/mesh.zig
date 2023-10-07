@@ -6,10 +6,7 @@
 
 const Config = @import("config.zig").Config;
 const math = @import("std").math;
-
-pub fn vsplat(comptime n: usize, comptime x: f64) @Vector(n, f64) {
-    return @splat(x);
-}
+const vsplat = @import("utils.zig").vsplat;
 
 const n_gc_default: u32 = 2;
 

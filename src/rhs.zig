@@ -7,7 +7,7 @@
 const Config = @import("config.zig").Config;
 const getNumEq = @import("physics.zig").getNumEq;
 const Mesh = @import("mesh.zig").Mesh;
-const vsplat = @import("mesh.zig").vsplat;
+const vsplat = @import("utils.zig").vsplat;
 const NumFlux = @import("numflux.zig").NumFlux;
 const Physics = @import("physics.zig").Physics;
 

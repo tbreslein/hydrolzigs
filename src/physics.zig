@@ -6,7 +6,7 @@
 
 const Config = @import("config.zig").Config;
 const Mesh = @import("mesh.zig").Mesh;
-const vsplat = @import("mesh.zig").vsplat;
+const vsplat = @import("utils.zig").vsplat;
 const std = @import("std");
 const panic = std.debug.panic;
 const math = std.math;
