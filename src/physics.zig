@@ -114,7 +114,7 @@ pub fn Physics(comptime c: Config) type {
             }
 
             /// Update speed of sound, assuming the primitive variables are up-to-date
-            pub fn updateCsound(self: *Variables) void {
+            pub fn updateCSound(self: *Variables) void {
                 if (!is_isothermal) {
                     self.*.csound = @sqrt(self.*.gamma_vec * self.*.prim[j_pressure] / self.*.prim[j_rho]);
                 }
