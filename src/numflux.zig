@@ -67,16 +67,13 @@ pub fn NumFlux(comptime c: Config) type {
                 }
             }
 
-            // TODO: store the eigen vals, a+, a-, b, c, fluxnum, uflux_east, uflux_west, ucons_east, ucons_west,
-            // and d_area_xi_deta_dphi_east in fitting Vectors
-            // I could just have vectors for these values that are all just n_comp + 1 in size, and load the values
-            // I need directly into those
-            // AND benchmark it against a regular for loop version
-
             self.*.a_plus = @max(vsplat(n_reduced, 0.0), @max(self.*.eigen_west[m - 1], self.eigen_east[m - 1]));
             self.*.a_minus = @min(vsplat(n_reduced, 0.0), @min(self.*.eigen_west[0], self.eigen_east[0]));
             self.*.b = da_east / (self.*.a_plus - self.*.a_minus);
             self.*.c = self.*.a_plus * self.*.a_minus;
+            inline for (0..m) |j| {
+                self.*.flux_num[j] = self.*.b * (self.*.a_plus * self.*.uflux_east[j] - self.*.a_minus * self.*.uflux_west[j] + self.*.c * (self.*.ucons_west[j] - self.*.ucons_east[j]));
+            }
         }
 
         fn reconstruct(self: *NumFlux(c), u: *Physics(c)) void {
