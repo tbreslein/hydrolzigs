@@ -1,3 +1,5 @@
+# THIS WAS MIGRATED TO https://codeberg.org/tbreslein/hydrolzigs
+
 # hydrolzigs
 
 A little hydrodynamics solver written in zigs.
