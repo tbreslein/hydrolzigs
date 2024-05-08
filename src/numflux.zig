@@ -1,4 +1,4 @@
-// Copyright (c) 2023
+// Copyright (c) 2023-2024
 // Author: Tommy Breslein (github.com/tbreslein)
 // License: MIT
 
@@ -84,26 +84,26 @@ pub fn NumFlux(comptime c: Config) type {
 
                     self.*.slopes[i] = inv_dxi * switch (c.numflux.limiter_mode) {
                         .minmod => if (math.sign(x) * math.sign(y) > 0) {
-                            math.sign(x) * math.min(@fabs(x), @fabs(y));
+                            math.sign(x) * math.min(@abs(x), @abs(y));
                         } else {
                             0.0;
                         },
                         .superbee => if (x * y > 0) {
-                            math.min(math.min(@fabs(x), @fabs(y)), 0.5 * math.max(@fabs(x), @fabs(y)));
+                            math.min(math.min(@abs(x), @abs(y)), 0.5 * math.max(@abs(x), @abs(y)));
                         } else {
                             0.0;
                         },
                         .monocent => blk: {
                             const z = 0.5 * (u.*.cent.cons[j][i - 1] - u.*.cent.cons[j][i + 1]);
                             break :blk if (math.sign(x) * math.sign(y) > 0 and math.sign(y) * math.sign(z) > 0) {
-                                math.sign(x) * math.min(@fabs(x * c.numflux.limiter_param), math.min(@fabs(y * c.numflux.limiter_param), @fabs(y)));
+                                math.sign(x) * math.min(@abs(x * c.numflux.limiter_param), math.min(@abs(y * c.numflux.limiter_param), @abs(y)));
                             } else {
                                 0.0;
                             };
                         },
                         .vanleer => blk: {
-                            const abs_x = @fabs(x);
-                            const abs_y = @fabs(y);
+                            const abs_x = @abs(x);
+                            const abs_y = @abs(y);
                             break :blk (x * abs_x + y * abs_y) / (abs_x + abs_y + math.floatMin(f64));
                         },
                     };

@@ -1,4 +1,4 @@
-// Copyright (c) 2023
+// Copyright (c) 2023-2024
 // Author: Tommy Breslein (github.com/tbreslein)
 // License: MIT
 
@@ -26,7 +26,7 @@ pub fn Mesh(comptime c: Config) type {
         var vec = vsplat(c.mesh.n, 0.0);
         comptime switch (c.mesh.type) {
             .cartesian => {
-                inline for (0..c.mesh.n) |i| {
+                for (0..c.mesh.n) |i| {
                     vec[i] = @mulAdd(f64, dxi, @as(i32, i) - 2, c.mesh.xi_in);
                 }
             },

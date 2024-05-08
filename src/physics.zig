@@ -1,4 +1,4 @@
-// Copyright (c) 2023
+// Copyright (c) 2023-2024
 // Author: Tommy Breslein (github.com/tbreslein)
 // License: MIT
 
@@ -159,7 +159,7 @@ pub fn Physics(comptime c: Config) type {
         ///
         /// Panics in case the time step width is not finite.
         pub fn calcDtCFL(self: Physics(c), c_cfl: f64, mesh: Mesh) f64 {
-            const dt = c_cfl / @reduce(.Max, @fabs(self.cent.eigen_vals[j_eigenmax] * mesh.cell_width_inv));
+            const dt = c_cfl / @reduce(.Max, @abs(self.cent.eigen_vals[j_eigenmax] * mesh.cell_width_inv));
             if (!math.isFinite(dt)) {
                 panic("CFL time step turned non-finite!");
             }
@@ -182,7 +182,7 @@ fn conversionTest(comptime physconf: Config.PhysicsConfig) !void {
         },
     };
     const m = comptime getNumEq(c);
-    var expected = [_]@Vector(c.mesh.n, f64){vsplat(c.mesh.n, 111.1)} ** m;
+    const expected = [_]@Vector(c.mesh.n, f64){vsplat(c.mesh.n, 111.1)} ** m;
     var u = Physics(c){};
     u.cent.prim = expected;
     u.cent.updateCons();

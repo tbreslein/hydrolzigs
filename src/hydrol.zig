@@ -1,4 +1,4 @@
-// Copyright (c) 2023
+// Copyright (c) 2023-2024
 // Author: Tommy Breslein (github.com/tbreslein)
 // License: MIT
 

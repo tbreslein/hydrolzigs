@@ -1,4 +1,4 @@
-// Copyright (c) 2023
+// Copyright (c) 2023-2024
 // Author: Tommy Breslein (github.com/tbreslein)
 // License: MIT
 
@@ -7,12 +7,14 @@ const assert = std.debug.assert;
 
 const hydrol_path = "src/hydrol.zig";
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const hydrol_module = b.createModule(.{
-        .source_file = .{ .path = hydrol_path },
+        .root_source_file = .{ .path = hydrol_path },
+        .target = target,
+        .optimize = optimize,
     });
 
     const sim_path = b.option(
@@ -24,8 +26,10 @@ pub fn build(b: *std.build.Builder) void {
     opts.addOption([]const u8, "sim", sim_path);
 
     if (sim_path.len > 0) {
-        // Extract the file name without the ending, for example extract "template" from "examples/template.zig"
-        // by splitting it into path chunks, go to the last chunk, and strip out the file ending.
+        // Extract the file name without the ending.
+        // For example extract "template" from "examples/template.zig" by
+        // splitting it into path chunks, go to the last chunk, and strip out
+        // the file ending.
 
         var sim_path_splits = std.mem.splitBackwards(u8, sim_path, std.fs.path.sep_str);
         const sim_file = sim_path_splits.next().?;
@@ -38,7 +42,7 @@ pub fn build(b: *std.build.Builder) void {
             .target = target,
             .optimize = optimize,
         });
-        exe.addModule("hydrol", hydrol_module);
+        exe.root_module.addImport("hydrol", hydrol_module);
 
         const run_cmd = b.addRunArtifact(exe);
         run_cmd.step.dependOn(b.getInstallStep());
