@@ -16,7 +16,7 @@ pub fn run(comptime c: Config, u: *Physics(c), rhs: *RHS(c), mesh: Mesh(c)) void
     std.debug.print("mesh = {}\n", .{mesh});
     std.debug.print("u = {}\n", .{u});
     std.debug.print("rhs = {}\n", .{rhs});
-    rhs.*.numflux.calcDFluxDXi(u);
+    // rhs.*.numflux.calcDFluxDXi(u);
 }
 
 test {

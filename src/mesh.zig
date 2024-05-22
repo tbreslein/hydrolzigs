@@ -115,120 +115,120 @@ pub fn Mesh(comptime c: Config) type {
         comptime dphi: f64 = dphi,
 
         /// Vector of xi coordinates in the centre of each cell
-        comptime xi_cent: @Vector(c.mesh.n, f64) = xi_cent,
+        comptime xi_cent: [c.mesh.n]f64 = xi_cent,
 
         /// Vector of xi coordinates at the west border of each cell
-        comptime xi_west: @Vector(c.mesh.n, f64) = xi_west,
+        comptime xi_west: [c.mesh.n]f64 = xi_west,
 
         /// Vector of xi coordinates at the east border of each cell
-        comptime xi_east: @Vector(c.mesh.n, f64) = xi_east,
+        comptime xi_east: [c.mesh.n]f64 = xi_east,
 
         /// Inverse of xi_cent
-        comptime xi_cent_inv: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 1.0) / xi_cent,
+        comptime xi_cent_inv: [c.mesh.n]f64 = vsplat(c.mesh.n, 1.0) / xi_cent,
 
         /// Inverse of xi_west
-        comptime xi_west_inv: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 1.0) / xi_west,
+        comptime xi_west_inv: [c.mesh.n]f64 = vsplat(c.mesh.n, 1.0) / xi_west,
 
         /// Inverse of xi_east
-        comptime xi_east_inv: @Vector(c.mesh.n, f64) = vsplat(c.mesh.n, 1.0) / xi_east,
+        comptime xi_east_inv: [c.mesh.n]f64 = vsplat(c.mesh.n, 1.0) / xi_east,
 
         /// Geometric scale along the xi coordinate at the centre of each cell
-        comptime h_xi_cent: @Vector(c.mesh.n, f64) = h_xi_cent,
+        comptime h_xi_cent: [c.mesh.n]f64 = h_xi_cent,
 
         /// Geometric scale along the xi coordinate at the west border of each cell
-        comptime h_xi_west: @Vector(c.mesh.n, f64) = h_xi_west,
+        comptime h_xi_west: [c.mesh.n]f64 = h_xi_west,
 
         /// Geometric scale along the xi coordinate at the east border of each cell
-        comptime h_xi_east: @Vector(c.mesh.n, f64) = h_xi_east,
+        comptime h_xi_east: [c.mesh.n]f64 = h_xi_east,
 
         /// Geometric scale along the eta coordinate at the centre of each cell
-        comptime h_eta_cent: @Vector(c.mesh.n, f64) = h_eta_cent,
+        comptime h_eta_cent: [c.mesh.n]f64 = h_eta_cent,
 
         /// Geometric scale along the eta coordinate at the west border of each cell
-        comptime h_eta_west: @Vector(c.mesh.n, f64) = h_eta_west,
+        comptime h_eta_west: [c.mesh.n]f64 = h_eta_west,
 
         /// Geometric scale along the eta coordinate at the east border of each cell
-        comptime h_eta_east: @Vector(c.mesh.n, f64) = h_eta_east,
+        comptime h_eta_east: [c.mesh.n]f64 = h_eta_east,
 
         /// Geometric scale along the Phi coordinate at the centre of each cell
-        comptime h_phi_cent: @Vector(c.mesh.n, f64) = h_phi_cent,
+        comptime h_phi_cent: [c.mesh.n]f64 = h_phi_cent,
 
         /// Geometric scale along the Phi coordinate at the west border of each cell
-        comptime h_phi_west: @Vector(c.mesh.n, f64) = h_phi_west,
+        comptime h_phi_west: [c.mesh.n]f64 = h_phi_west,
 
         /// Geometric scale along the Phi coordinate at the east border of each cell
-        comptime h_phi_east: @Vector(c.mesh.n, f64) = h_phi_east,
+        comptime h_phi_east: [c.mesh.n]f64 = h_phi_east,
 
         /// Square root of the metric factor g
-        comptime sqrt_g: @Vector(c.mesh.n, f64) = sqrt_g,
+        comptime sqrt_g: [c.mesh.n]f64 = sqrt_g,
 
         /// Line element along xi
-        comptime line_xi: @Vector(c.mesh.n, f64) = line_xi,
+        comptime line_xi: [c.mesh.n]f64 = line_xi,
 
         /// Inverse of line_xi
-        comptime line_xi_inv: @Vector(c.mesh.n, f64) = line_xi_inv,
+        comptime line_xi_inv: [c.mesh.n]f64 = line_xi_inv,
 
         /// Shorthand for the west cell face area perpendicular to xi divided by deta and dphi
-        comptime d_area_xi_deta_dphi_west: @Vector(c.mesh.n, f64) = d_area_xi_deta_dphi_west,
+        comptime d_area_xi_deta_dphi_west: [c.mesh.n]f64 = d_area_xi_deta_dphi_west,
 
         /// Shorthand for the east cell face area perpendicular to xi divided by deta and dphi
-        comptime d_area_xi_deta_dphi_east: @Vector(c.mesh.n, f64) = d_area_xi_deta_dphi_east,
+        comptime d_area_xi_deta_dphi_east: [c.mesh.n]f64 = d_area_xi_deta_dphi_east,
 
         /// Surface area of each cell in the eta-Phi plane
-        comptime area_cell: @Vector(c.mesh.n, f64) = area_cell,
+        comptime area_cell: [c.mesh.n]f64 = area_cell,
 
         /// Surface area for the west cell face area perpendicular to xi
-        comptime area_west: @Vector(c.mesh.n, f64) = area_west,
+        comptime area_west: [c.mesh.n]f64 = area_west,
 
         /// Surface area for the east cell face area perpendicular to xi
-        comptime area_east: @Vector(c.mesh.n, f64) = area_east,
+        comptime area_east: [c.mesh.n]f64 = area_east,
 
         /// Volume of each cell
-        comptime volume: @Vector(c.mesh.n, f64) = volume,
+        comptime volume: [c.mesh.n]f64 = volume,
 
         /// Shorthand for: deta * dphi / volume
-        comptime deta_dphi_d_volume: @Vector(c.mesh.n, f64) = deta_dphi_d_volume,
+        comptime deta_dphi_d_volume: [c.mesh.n]f64 = deta_dphi_d_volume,
 
         /// Distance between west and east ends of each cell along xi
-        comptime cell_width: @Vector(c.mesh.n, f64) = cell_width,
+        comptime cell_width: [c.mesh.n]f64 = cell_width,
 
         /// Inverse of cell_width
-        comptime cell_width_inv: @Vector(c.mesh.n, f64) = cell_width_inv,
+        comptime cell_width_inv: [c.mesh.n]f64 = cell_width_inv,
 
         /// Commutator coefficient for eta-xi-eta
-        comptime cexe: @Vector(c.mesh.n, f64) = cexe,
+        comptime cexe: [c.mesh.n]f64 = cexe,
 
         /// Commutator coefficient for Phi-xi-Phi
-        comptime cpxp: @Vector(c.mesh.n, f64) = cpxp,
+        comptime cpxp: [c.mesh.n]f64 = cpxp,
 
         /// Commutator coefficient for xi-eta-xi
-        comptime cxex: @Vector(c.mesh.n, f64) = cxex,
+        comptime cxex: [c.mesh.n]f64 = cxex,
 
         /// Commutator coefficient for Phi-eta-Phi
-        comptime cpep: @Vector(c.mesh.n, f64) = cpep,
+        comptime cpep: [c.mesh.n]f64 = cpep,
 
         /// Commutator coefficient for xi-Phi-xi
-        comptime cxpx: @Vector(c.mesh.n, f64) = cxpx,
+        comptime cxpx: [c.mesh.n]f64 = cxpx,
 
         /// Commutator coefficient for eta-Phi-eta
-        comptime cepe: @Vector(c.mesh.n, f64) = cepe,
+        comptime cepe: [c.mesh.n]f64 = cepe,
 
         /// Shorthand for -cexe
-        comptime minus_cexe: @Vector(c.mesh.n, f64) = -cexe,
+        comptime minus_cexe: [c.mesh.n]f64 = -cexe,
 
         /// Shorthand for -cpxp
-        comptime minus_cpxp: @Vector(c.mesh.n, f64) = -cpxp,
+        comptime minus_cpxp: [c.mesh.n]f64 = -cpxp,
 
         /// Shorthand for -cxex
-        comptime minus_cxex: @Vector(c.mesh.n, f64) = -cxex,
+        comptime minus_cxex: [c.mesh.n]f64 = -cxex,
 
         /// Shorthand for -cpep
-        comptime minus_cpep: @Vector(c.mesh.n, f64) = -cpep,
+        comptime minus_cpep: [c.mesh.n]f64 = -cpep,
 
         /// Shorthand for -cxpx
-        comptime minus_cxpx: @Vector(c.mesh.n, f64) = -cxpx,
+        comptime minus_cxpx: [c.mesh.n]f64 = -cxpx,
 
         /// Shorthand for -cepe
-        comptime minus_cepe: @Vector(c.mesh.n, f64) = -cepe,
+        comptime minus_cepe: [c.mesh.n]f64 = -cepe,
     };
 }
