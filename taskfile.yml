@@ -1,6 +1,0 @@
----
-version: '3'
-
-tasks:
-  example: zig build -Dsim="examples/{{.CLI_ARGS}}.zig"
-  test: zig test src/hydrol.zig
