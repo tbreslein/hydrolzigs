@@ -13,10 +13,10 @@ pub const RHS = @import("rhs.zig").RHS;
 
 /// Run a simulation
 pub fn run(comptime c: Config, u: *Physics(c), rhs: *RHS(c), mesh: Mesh(c)) void {
-    std.debug.print("mesh = {}\n", .{mesh});
-    std.debug.print("u = {}\n", .{u});
-    std.debug.print("rhs = {}\n", .{rhs});
-    // rhs.*.numflux.calcDFluxDXi(u);
+    std.debug.print("\n", .{});
+    std.debug.print("mesh.type = {}\n\n", .{mesh.type});
+    rhs.*.numflux.calcDFluxDXi(u);
+    std.debug.print("flux_num = {any}\n\n", .{rhs.numflux.flux_num});
 }
 
 test {
