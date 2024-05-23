@@ -23,7 +23,7 @@ pub fn Mesh(comptime c: Config) type {
     };
 
     const xi_west = blk: {
-        var vec = vsplat(c.mesh.n, 0.0);
+        var vec = [c.mesh.n]f64{0} ** c.mesh.n;
         comptime switch (c.mesh.type) {
             .cartesian => {
                 for (0..c.mesh.n) |i| {
@@ -92,6 +92,8 @@ pub fn Mesh(comptime c: Config) type {
     return struct {
         /// The type of mesh; defaults to cartesian
         comptime type: Config.MeshConfig.Type = .cartesian,
+
+        comptime n: u32 = c.mesh.n,
 
         /// The number of ghost cells per edge; defaults to 2
         comptime n_gc: u32 = n_gc_default,
