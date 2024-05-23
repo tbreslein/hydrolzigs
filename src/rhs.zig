@@ -17,7 +17,16 @@ const Physics = @import("physics.zig").Physics;
 pub fn RHS(comptime c: Config) type {
     const num_eq = getNumEq(c);
     return struct {
-        full_rhs: [num_eq]@Vector(c.mesh.n, f64) = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
+        full_rhs: [num_eq][c.mesh.n]f64 = [_]@Vector(c.mesh.n, f64){@splat(0.0)} ** num_eq,
         numflux: NumFlux(c) = .{},
+
+        pub fn updateRHS(self: *RHS(c), u: *Physics(c), mesh: Mesh(c)) void {
+            self.*.numflux.calcDFluxDXi(u);
+            inline for (0..num_eq) |j| {
+                inline for (mesh.ixi_in..mesh.ixi_out + 1) |i| {
+                    self.*.full_rhs[j][i] = self.*.numflux.flux_num[j][i];
+                }
+            }
+        }
     };
 }
