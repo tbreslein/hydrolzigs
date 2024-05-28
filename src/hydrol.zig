@@ -15,7 +15,7 @@ pub const RHS = @import("rhs.zig").RHS;
 pub fn run(comptime c: Config, u: *Physics(c), rhs: *RHS(c), mesh: Mesh(c)) void {
     std.debug.print("\n", .{});
     std.debug.print("mesh.type = {}\n\n", .{mesh.type});
-    rhs.*.updateRHS(u, mesh);
+    rhs.updateRHS(u, mesh);
     std.debug.print("flux_num = {any}\n\n", .{rhs.numflux.flux_num});
     std.debug.print("full_rhs = {any}\n\n", .{rhs.full_rhs});
 }

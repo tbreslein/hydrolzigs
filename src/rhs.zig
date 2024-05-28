@@ -21,10 +21,10 @@ pub fn RHS(comptime c: Config) type {
         numflux: NumFlux(c) = .{},
 
         pub fn updateRHS(self: *RHS(c), u: *Physics(c), mesh: Mesh(c)) void {
-            self.*.numflux.calcDFluxDXi(u);
+            self.numflux.calcDFluxDXi(u);
             inline for (0..num_eq) |j| {
                 inline for (mesh.ixi_in..mesh.ixi_out + 1) |i| {
-                    self.*.full_rhs[j][i] = self.*.numflux.flux_num[j][i];
+                    self.full_rhs[j][i] = self.numflux.flux_num[j][i];
                 }
             }
         }

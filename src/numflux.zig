@@ -62,43 +62,43 @@ pub fn NumFlux(comptime c: Config) type {
         ucons_east: [m]@Vector(n_reduced, f64) = [_]@Vector(n_reduced, f64){vsplat(n_reduced, 0.0)} ** m,
 
         pub fn calcDFluxDXi(self: *NumFlux(c), u: *Physics(c)) void {
-            self.*.reconstruct(u);
-            u.*.west.updatePrim();
-            u.*.east.updatePrim();
-            u.*.west.updateCSound();
-            u.*.east.updateCSound();
-            u.*.west.updateEigenVals();
-            u.*.east.updateEigenVals();
-            u.*.west.updateFlux();
-            u.*.east.updateFlux();
+            self.reconstruct(u);
+            u.west.updatePrim();
+            u.east.updatePrim();
+            u.west.updateCSound();
+            u.east.updateCSound();
+            u.west.updateEigenVals();
+            u.east.updateEigenVals();
+            u.west.updateFlux();
+            u.east.updateFlux();
 
             inline for (0..m) |j| {
                 inline for (0.., mesh.ixi_in - 1..mesh.ixi_out + 1, mesh.ixi_in..mesh.ixi_out + 2) |k, i_left, i| {
-                    self.*.eigen_east[j][k] = u.*.east.eigen_vals[j][i_left];
-                    self.*.eigen_west[j][k] = u.*.west.eigen_vals[j][i];
-                    self.*.uflux_east[j][k] = u.*.east.flux[j][i_left];
-                    self.*.uflux_west[j][k] = u.*.west.flux[j][i];
-                    self.*.ucons_east[j][k] = u.*.east.cons[j][i_left];
-                    self.*.ucons_west[j][k] = u.*.west.cons[j][i];
+                    self.eigen_east[j][k] = u.east.eigen_vals[j][i_left];
+                    self.eigen_west[j][k] = u.west.eigen_vals[j][i];
+                    self.uflux_east[j][k] = u.east.flux[j][i_left];
+                    self.uflux_west[j][k] = u.west.flux[j][i];
+                    self.ucons_east[j][k] = u.east.cons[j][i_left];
+                    self.ucons_west[j][k] = u.west.cons[j][i];
                 }
             }
 
-            self.*.a_plus = @max(self.*.zero_vec, @max(self.*.eigen_west[m - 1], self.eigen_east[m - 1]));
-            self.*.a_minus = @min(self.*.zero_vec, @min(self.*.eigen_west[0], self.eigen_east[0]));
-            self.*.b = da_east / (self.*.a_plus - self.*.a_minus);
-            self.*.c = self.*.a_plus * self.*.a_minus;
+            self.a_plus = @max(self.zero_vec, @max(self.eigen_west[m - 1], self.eigen_east[m - 1]));
+            self.a_minus = @min(self.zero_vec, @min(self.eigen_west[0], self.eigen_east[0]));
+            self.b = da_east / (self.a_plus - self.a_minus);
+            self.c = self.a_plus * self.a_minus;
             inline for (0..m) |j| {
-                self.*.flux_num[j] = self.*.b * (self.*.a_plus * self.*.uflux_east[j] - self.*.a_minus * self.*.uflux_west[j] + self.*.c * (self.*.ucons_west[j] - self.*.ucons_east[j]));
+                self.flux_num[j] = self.b * (self.a_plus * self.uflux_east[j] - self.a_minus * self.uflux_west[j] + self.c * (self.ucons_west[j] - self.ucons_east[j]));
             }
         }
 
         fn reconstruct(self: *NumFlux(c), u: *Physics(c)) void {
             inline for (0..m) |j| {
                 inline for (1..n - 1) |i| {
-                    const x = u.*.cent.cons[j][i] - u.*.cent.cons[j][i - 1];
-                    const y = u.*.cent.cons[j][i - 1] - u.*.cent.cons[j][i];
+                    const x = u.cent.cons[j][i] - u.cent.cons[j][i - 1];
+                    const y = u.cent.cons[j][i - 1] - u.cent.cons[j][i];
 
-                    self.*.slopes[i] = inv_dxi * switch (c.numflux.limiter_mode) {
+                    self.slopes[i] = inv_dxi * switch (c.numflux.limiter_mode) {
                         .minmod => if (math.sign(x) * math.sign(y) > 0) {
                             math.sign(x) * math.min(@abs(x), @abs(y));
                         } else {
@@ -110,7 +110,7 @@ pub fn NumFlux(comptime c: Config) type {
                             0.0;
                         },
                         .monocent => blk: {
-                            const z = 0.5 * (u.*.cent.cons[j][i - 1] - u.*.cent.cons[j][i + 1]);
+                            const z = 0.5 * (*.cent.cons[j][i - 1] - u.cent.cons[j][i + 1]);
                             break :blk if (math.sign(x) * math.sign(y) > 0 and math.sign(y) * math.sign(z) > 0) {
                                 math.sign(x) * math.min(@abs(x * c.numflux.limiter_param), math.min(@abs(y * c.numflux.limiter_param), @abs(y)));
                             } else {
@@ -123,8 +123,8 @@ pub fn NumFlux(comptime c: Config) type {
                             break :blk (x * abs_x + y * abs_y) / (abs_x + abs_y + math.floatMin(f64));
                         },
                     };
-                    u.*.west.cons[j][i] = u.*.cent.cons[j][i] + self.*.slopes[i] * dist_west[i];
-                    u.*.east.cons[j][i] = u.*.cent.cons[j][i] + self.*.slopes[i] * dist_east[i];
+                    u.west.cons[j][i] = u.cent.cons[j][i] + self.slopes[i] * dist_west[i];
+                    u.east.cons[j][i] = u.cent.cons[j][i] + self.slopes[i] * dist_east[i];
                 }
             }
         }
